@@ -1,76 +1,47 @@
+// app/register/page.js
 "use client";
+import Link from 'next/link';
 
-import { useState } from "react";
-import api from "../lib/api";
-import { useRouter } from "next/navigation";
-
-export default function RegisterPage() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
-  const router = useRouter();
-
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const res = await api.post(
-        "/users/register",
-        { name, email, password },
-        { withCredentials: true } // ✅ ensure cookies are handled
-      );
-      setMessage(res.data.message);
-
-      // ✅ redirect to login after success
-      setTimeout(() => {
-        router.push("/login");
-      }, 1500);
-    } catch (error: any) {
-      setMessage(error.response?.data?.error || "Something went wrong");
+export default function RegisterEntry() {
+  const cards = [
+    {
+      title: "NEWSPAPER",
+      role: "Newspaper",
+      points: ["Access to Diverse Writing Talent", "Flexible Collaboration Models", "Content Quality & Brand Expansion"]
+    },
+    {
+      title: "JOB SEEKER",
+      role: "JobSeeker",
+      points: ["Smart Job Matching", "Verified Employer Network", "Portfolio & Resume Showcase"]
     }
-  };
+  ];
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <form
-        onSubmit={handleRegister}
-        className="p-6 border rounded-md shadow-md w-80 bg-white"
-      >
-        <h2 className="text-xl font-bold mb-4">Register</h2>
-
-        <input
-          type="text"
-          placeholder="Name"
-          className="border p-2 w-full mb-2"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-
-        <input
-          type="email"
-          placeholder="Email"
-          className="border p-2 w-full mb-2"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-
-        <input
-          type="password"
-          placeholder="Password"
-          className="border p-2 w-full mb-4"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-
-        <button className="bg-blue-600 text-white p-2 rounded w-full hover:bg-blue-700">
-          Register
-        </button>
-      </form>
-
-      {message && <p className="mt-2 text-sm text-gray-700">{message}</p>}
+    <div className="min-h-screen bg-[#F5F5DC] flex flex-col items-center justify-center p-6 text-black">
+      <h1 className="text-3xl font-black absolute top-10 left-10 tracking-tight">NEWSCONNECT</h1>
+      
+      <h2 className="text-4xl font-black mb-16 tracking-wide">REGISTER YOURSELF !</h2>
+      
+      <div className="flex flex-col md:flex-row gap-12">
+        {cards.map((card) => (
+          <div key={card.title} className="bg-black text-white p-12 rounded-[30px] w-80 shadow-[10px_10px_0px_0px_rgba(0,0,0,0.1)]">
+            <h3 className="text-2xl font-black text-center mb-10 border-b border-white/20 pb-4">
+              {card.title}
+            </h3>
+            <ul className="space-y-6 mb-12">
+              {card.points.map((pt) => (
+                <li key={pt} className="text-lg leading-tight font-light">{pt}</li>
+              ))}
+            </ul>
+            <Link 
+              href={`/register/form?role=${card.role}`}
+              className="block w-full bg-white text-black text-center py-3 rounded-full font-bold hover:bg-gray-200 transition-colors"
+            >
+              SignUp
+            </Link>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
