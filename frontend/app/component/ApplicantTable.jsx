@@ -1,45 +1,95 @@
-// app/component/ApplicantTable.jsx
-import api from "../lib/api";
+"use client";
 
-export default function ApplicantTable({ applicants, onViewResume, refreshData }) {
-  const updateStatus = async (id, status) => {
-    try {
-      await api.patch(`/jobs/applications/${id}/status`, { status });
-      window.location.reload(); // Simple way to refresh the list
-    } catch (err) {
-      alert("Failed to update status");
-    }
-  };
+import React from "react";
+import { CheckCircle2, XCircle, Eye } from "lucide-react";
+import "./ApplicantTable.css";
+
+export default function ApplicantTable({ applicants, onUpdateStatus, onViewResume }) {
+  if (applicants.length === 0) {
+    return <div className="p-4 text-gray-500">No applicants found yet.</div>;
+  }
 
   return (
-    <table className="w-full text-left border-separate border-spacing-y-2">
-      <thead>
-        <tr className="text-gray-400 text-sm">
-          <th className="pb-4 px-4 font-normal">Applicant</th>
-          <th className="pb-4 px-4 font-normal">Position</th>
-          <th className="pb-4 px-4 font-normal">Status</th>
-          <th className="pb-4 px-4 font-normal text-center">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {applicants.map((app) => (
-          <tr key={app._id} className="border-b border-white/10">
-            <td onClick={() => onViewResume(app)} className="py-4 px-4 text-white cursor-pointer underline">
-              {app.applicantId?.name}
-            </td>
-            <td className="py-4 px-4 text-white">{app.jobId?.title}</td>
-            <td className="py-4 px-4">
-              <span className={`px-3 py-1 rounded-md ${app.status === 'Approve' ? 'bg-green-500' : 'bg-red-500'}`}>
-                {app.status}
-              </span>
-            </td>
-            <td className="py-4 px-4 flex gap-2 justify-center">
-              <button onClick={() => updateStatus(app._id, 'Approve')} className="bg-green-600 px-2 py-1 rounded text-xs">Approve</button>
-              <button onClick={() => updateStatus(app._id, 'Reject')} className="bg-red-600 px-2 py-1 rounded text-xs">Reject</button>
-            </td>
+    <div className="applicant-table-wrapper">
+      <table className="applicant-table">
+        <thead>
+          <tr className="applicant-table-header">
+            <th>Applicant</th>
+            <th>Applying For</th>
+            <th>Status</th>
+            <th>Actions</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {applicants.map((app) => {
+            // SAFE ACCESS: Handle cases where applicantId might be null (deleted user)
+            const applicantName = app.applicantId?.name || "Unknown Applicant";
+            const applicantEmail = app.applicantId?.email || "No Email";
+            const jobTitle = app.jobId?.title || "Unknown Job";
+            const statusClass = 
+                app.status === "Approve" || app.status === "Approved" ? "status-approved" : 
+                app.status === "Reject"  || app.status === "Rejected" ? "status-rejected" : "status-pending";
+
+            return (
+              <tr key={app._id} className="applicant-table-row">
+                {/* 1. Applicant Info */}
+                <td className="applicant-table-cell applicant-table-cell-left">
+                  <div className="applicant-info">
+                    <div className="applicant-avatar">
+                      {applicantName.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="applicant-details">
+                      <button className="applicant-name" onClick={() => onViewResume(app)}>
+                        {applicantName}
+                      </button>
+                      <p className="applicant-email">{applicantEmail}</p>
+                    </div>
+                  </div>
+                </td>
+
+                {/* 2. Job Position */}
+                <td className="applicant-table-cell">
+                   {jobTitle}
+                </td>
+
+                {/* 3. Status Badge */}
+                <td className="applicant-table-cell">
+                  <span className={`applicant-status ${statusClass}`}>
+                    {app.status}
+                  </span>
+                </td>
+
+                {/* 4. Action Buttons */}
+                <td className="applicant-table-cell applicant-table-cell-right">
+                  <div className="applicant-actions">
+                    <button
+                      title="Approve"
+                      onClick={() => onUpdateStatus(app._id, "Approved")}
+                      className="action-button approve"
+                    >
+                      <CheckCircle2 size={18} />
+                    </button>
+                    <button
+                      title="Reject"
+                      onClick={() => onUpdateStatus(app._id, "Rejected")}
+                      className="action-button reject"
+                    >
+                      <XCircle size={18} />
+                    </button>
+                    <button
+                      title="View Details"
+                      onClick={() => onViewResume(app)}
+                      className="action-button view"
+                    >
+                      <Eye size={18} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 }

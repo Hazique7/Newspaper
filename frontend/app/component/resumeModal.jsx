@@ -1,27 +1,95 @@
-// components/ResumeModal.jsx
+"use client";
+
+import React from "react";
+import { X, User, Mail, BookOpen, ExternalLink, MapPin } from "lucide-react";
+import "./ResumeModal.css";
+
 export default function ResumeModal({ applicant, onClose }) {
+  if (!applicant) return null;
+
+  // Safely access nested data (in case fields are missing)
+  const user = applicant.applicantId || {};
+  const profile = user.profile || {};
+  const job = applicant.jobId || {};
+
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-      {/* Blurred Backdrop */}
-      <div className="absolute inset-0 bg-black/20 backdrop-blur-md" onClick={onClose}></div>
-      
-      {/* Modal Content */}
-      <div className="relative bg-white/40 border border-white/20 backdrop-blur-xl rounded-[40px] p-10 w-full max-w-2xl shadow-2xl">
-        <button onClick={onClose} className="absolute top-6 right-6 text-2xl">×</button>
-        
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-extrabold">{applicant.applicantId.name}'s Resume</h2>
-          <p className="tracking-widest uppercase font-semibold text-sm">
-            POSITION/ {applicant.jobId.title}
+    <div className="resume-modal-wrapper">
+      <div className="resume-modal-overlay" onClick={onClose}></div>
+      <div className="resume-modal-container">
+        <button className="resume-modal-close" onClick={onClose}>
+          <X size={24} />
+        </button>
+
+        <div className="resume-modal-header">
+          <div className="resume-modal-avatar">
+            <User size={32} />
+          </div>
+          <h2 className="resume-modal-name">{user.name || "Unknown Candidate"}</h2>
+          <p className="resume-modal-title">
+            APPLICANT FOR / <span>{job.title || "Position"}</span>
           </p>
         </div>
 
-        <div className="space-y-4 text-lg">
-          <p className="border-b border-black/20 pb-1">Full name: {applicant.applicantId.name}</p>
-          <p className="border-b border-black/20 pb-1">EMAIL: {applicant.applicantId.email}</p>
-          <p className="border-b border-black/20 pb-1">Education: {applicant.applicantId.profile?.education || 'Bachelors'}</p>
-          {/* Add other fields from your User profile schema */}
+        <div className="resume-modal-details">
+          <DetailItem
+            label="Email Address"
+            value={user.email}
+            icon={<Mail size={18} />}
+          />
+          <DetailItem
+            label="Location"
+            value={profile.city || "Not Provided"}
+            icon={<MapPin size={18} />}
+          />
+          <DetailItem
+            label="Education"
+            value={profile.education || "Not Specified"}
+            icon={<BookOpen size={18} />}
+          />
         </div>
+
+        {/* [NEW] Resume Action Button */}
+        <div style={{ padding: "0 30px 30px 30px" }}>
+          {profile.resumeLink ? (
+            <a 
+              href={profile.resumeLink} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="resume-modal-button"
+              style={{ 
+                display: "flex", 
+                alignItems: "center", 
+                justifyContent: "center", 
+                gap: "8px", 
+                textDecoration: "none",
+                textAlign: "center"
+              }}
+            >
+              <ExternalLink size={18} /> View / Download CV
+            </a>
+          ) : (
+            <button 
+              className="resume-modal-button" 
+              disabled 
+              style={{ backgroundColor: "#e2e8f0", color: "#94a3b8", cursor: "not-allowed" }}
+            >
+              No Resume Uploaded
+            </button>
+          )}
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+function DetailItem({ label, value, icon }) {
+  return (
+    <div className="detail-item">
+      <div className="detail-item-icon">{icon}</div>
+      <div className="detail-item-text">
+        <p className="detail-item-label">{label}</p>
+        <p className="detail-item-value">{value}</p>
       </div>
     </div>
   );

@@ -1,53 +1,83 @@
 "use client";
-import { useEffect, useState } from "react";
-import Sidebar from "@/components/Sidebar";
+
+import React from "react";
+import Sidebar from "../../component/layout/Sidebar";
+import { useAuth } from "../../context/AuthContext";
+import { User, ShieldCheck, Mail, Building2 } from "lucide-react";
+import "./SettingsPage.css";
 
 export default function SettingsPage() {
-  const [user, setUser] = useState({ name: "", email: "" });
+  const { user, loading } = useAuth();
 
-  useEffect(() => {
-    // Fetch user profile using the protected route
-    fetch("http://localhost:5000/api/users/profile", { credentials: "include" })
-      .then((res) => res.json())
-      .then((data) => setUser(data))
-      .catch((err) => console.error("Error fetching profile:", err));
-  }, []);
+  if (loading) return null;
 
   return (
-    <div className="flex bg-[#F5F5DC] min-h-screen text-black font-sans">
+    <div className="settings-page">
+      {/* Shared Global Sidebar */}
       <Sidebar />
-      <main className="flex-1 ml-64 p-12">
-        <div className="flex justify-between items-center mb-20">
-          <h2 className="text-xl font-bold uppercase tracking-tight">THE DAILY NEWS</h2>
-          <div className="bg-white rounded-full px-6 py-2 border border-black/10 flex items-center gap-2">
-             <span className="text-gray-400">Search</span>
-          </div>
-        </div>
 
-        <div className="max-w-4xl mx-auto bg-transparent border border-black/20 rounded-[40px] p-20 relative">
-          <h1 className="text-5xl font-black text-center mb-16 tracking-tight">Settings</h1>
-          
-          <div className="space-y-12 text-2xl uppercase font-bold tracking-tighter">
-            <div className="flex gap-4">
-              <span>COMPANY NAME :</span>
-              <span className="font-light">{user.name || "Loading..."}</span>
+      <main className="settings-main">
+        <header className="settings-header">
+          <div className="settings-user-info">
+            <div className="settings-icon-bg">
+              <Building2 size={20} className="settings-icon-light" />
             </div>
-            
-            <div className="flex gap-4">
-              <span>PASSWORD :</span>
-              <span className="font-light">T** ***** ***S</span>
+            <h2 className="settings-username">{user?.name || "The Daily News"}</h2>
+          </div>
+          <div className="settings-user-avatar">
+            <User size={20} />
+          </div>
+        </header>
+
+        <div className="settings-container">
+          <h1 className="settings-title">Settings</h1>
+
+          <div className="settings-sections">
+            {/* Company Name */}
+            <div className="settings-section">
+              <div className="settings-section-info">
+                <div className="settings-icon-bg">
+                  <Building2 size={20} className="settings-icon-light" />
+                </div>
+                <div>
+                  <span className="settings-section-label">Company Name</span>
+                  <p className="settings-section-value">{user?.name || "Loading..."}</p>
+                </div>
+              </div>
+              <button className="settings-section-action">Edit Name</button>
             </div>
-            
-            <div className="flex gap-4">
-              <span>EMAIL :</span>
-              <span className="font-light">{user.email || "Loading..."}</span>
+
+            {/* Email */}
+            <div className="settings-section">
+              <div className="settings-section-info">
+                <div className="settings-icon-bg">
+                  <Mail size={20} className="settings-icon-light" />
+                </div>
+                <div>
+                  <span className="settings-section-label">Email Address</span>
+                  <p className="settings-section-value">{user?.email || "Loading..."}</p>
+                </div>
+              </div>
+              <button className="settings-section-action">Change Email</button>
+            </div>
+
+            {/* Security */}
+            <div className="settings-section">
+              <div className="settings-section-info">
+                <div className="settings-icon-bg">
+                  <ShieldCheck size={20} className="settings-icon-light" />
+                </div>
+                <div>
+                  <span className="settings-section-label">Account Status</span>
+                  <p className="settings-section-value">Verified Employer</p>
+                </div>
+              </div>
+              <span className="settings-status-badge">Active</span>
             </div>
           </div>
 
-          <div className="flex justify-center mt-20">
-            <button className="bg-black text-white px-16 py-3 rounded-full font-black text-lg hover:scale-105 transition-transform">
-              SAVE CHANGES
-            </button>
+          <div className="settings-save-btn-wrapper">
+            <button className="settings-save-btn">Save All Changes</button>
           </div>
         </div>
       </main>

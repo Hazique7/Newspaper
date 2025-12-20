@@ -1,24 +1,17 @@
 "use client";
-
 import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, ReactNode } from "react";
 
-export default function ProtectedRoute({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const { user } = useAuth();
+export default function ProtectedRoute({ children }: { children: ReactNode }) {
+  const authContext = useAuth();
+  const user = authContext?.user;
   const router = useRouter();
 
   useEffect(() => {
-    if (!user) {
-      router.push("/login"); // redirect if not logged in
-    }
-  }, [user, router]);
+    if (!user) router.push("/login");
+  }, [user]);
 
-  if (!user) return null; // ⏳ show nothing until redirect
-
-  return <>{children}</>;
+  if (!user) return null;
+  return children;
 }

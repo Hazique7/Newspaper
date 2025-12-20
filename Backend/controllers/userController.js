@@ -2,77 +2,63 @@ import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-// ======================== REGISTER ========================
 export const registerUser = async (req, res) => {
-  try {
-    const { name, email, password, role } = req.body;
-    const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ error: "User already exists" });
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ 
-      name, 
-      email, 
-      password: hashedPassword, 
-      role: role || 'JobSeeker' 
-    });
-
-    res.status(201).json({
-      message: "User registered successfully",
-      user: { id: user._id, name: user.name, email: user.email },
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+  const { name, email, password, role } = req.body;
+  const hash = await bcrypt.hash(password, 10);
+  const user = await User.create({ name, email, password: hash, role });
+  res.status(201).json(user);
 };
 
-// ======================== LOGIN ========================
 export const loginUser = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ error: "User not found" });
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) return res.status(404).json({ error: "User not found" });
 
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
-    if (!isPasswordCorrect) return res.status(400).json({ error: "Invalid credentials" });
+  const ok = await bcrypt.compare(password, user.password);
+  if (!ok) return res.status(401).json({ error: "Invalid credentials" });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 60 * 60 * 1000,
-    });
-
-    res.json({ message: "Login successful" });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+  res.cookie("token", token, { httpOnly: true });
+  res.json({ success: true });
 };
 
-// ======================== LOGOUT ========================
+export const getProfile = async (req, res) => {
+  const user = await User.findById(req.userId).select("-password");
+  res.json(user);
+};
+
 export const logoutUser = (req, res) => {
   res.clearCookie("token");
-  res.json({ message: "Logged out successfully" });
+  res.json({ success: true });
 };
 
-// ======================== PROFILE (The Missing Export) ========================
-export const getUserProfile = async (req, res) => {
+// ======================== UPDATE PROFILE ========================
+export const updateUserProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.userId).select("-password");
+    const user = await User.findById(req.userId);
     if (!user) return res.status(404).json({ error: "User not found" });
-    res.json(user);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
 
-// ======================== DELETE ========================
-export const deleteUserProfile = async (req, res) => {
-  try {
-    await User.deleteOne({ _id: req.userId });
-    res.json({ message: "User deleted successfully" });
+    // Update fields if they exist in request body
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+    
+    // Update Profile object fields
+    if (req.body.profile) {
+      user.profile = {
+        ...user.profile, // Keep existing fields
+        ...req.body.profile // Overwrite with new ones
+      };
+    }
+
+    const updatedUser = await user.save();
+    
+    res.json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      role: updatedUser.role,
+      profile: updatedUser.profile,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -1,18 +1,16 @@
 "use client";
-
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import api from "../lib/api";
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation";
 
-type User = {
-  id: string;
-  name: string;
-  email: string;
-};
+// Define the API URL (Update port if needed)
+const API_URL = "http://localhost:5000/api/users";
+
+type User = { _id: string; name: string; email: string; role: string };
 
 type AuthContextType = {
   user: User | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (data: any) => Promise<void>;
+  register: (data: any) => Promise<void>;
   logout: () => Promise<void>;
   loading: boolean;
 };
@@ -24,40 +22,71 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
+  // 1. Check if user is logged in on initial load (Persistent Session)
   useEffect(() => {
-    fetchProfile();
+    const checkUser = async () => {
+      try {
+        const res = await fetch(`${API_URL}/profile`, {
+          credentials: "include", 
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data);
+        }
+      } catch (error) {
+        // CHANGE THIS LINE: Use log instead of error, or just leave empty
+        console.log("Guest user - session not found"); 
+      } finally {
+        setLoading(false);
+      }
+    };
+    checkUser();
   }, []);
 
-  const fetchProfile = async () => {
-    try {
-      const res = await api.get("/users/profile", { withCredentials: true });
-      setUser(res.data);
-    } catch {
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
+  // 2. Login Function
+  const login = async ({ email, password }: any) => {
+    const res = await fetch(`${API_URL}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+      credentials: "include",
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Login failed");
+
+    // After login, fetch the profile to get user details
+    const profileRes = await fetch(`${API_URL}/profile`, { credentials: "include" });
+    const userData = await profileRes.json();
+    setUser(userData);
+    router.push("/dashboard");
   };
 
-  const login = async (email: string, password: string) => {
-    await api.post(
-      "/users/login",
-      { email, password },
-      { withCredentials: true }
-    );
-    await fetchProfile();
-    router.push("/profile");
+  // 3. Register Function
+  const register = async (formData: any) => {
+    const res = await fetch(`${API_URL}/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+    
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Registration failed");
+    
+    // Redirect to login after success
+    router.push("/login");
   };
 
+  // 4. Logout Function
   const logout = async () => {
-    await api.post("/users/logout", {}, { withCredentials: true });
+    await fetch(`${API_URL}/logout`, { method: "POST", credentials: "include" });
     setUser(null);
     router.push("/login");
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
-      {loading ? null : children}
+    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+      {!loading && children}
     </AuthContext.Provider>
   );
 };

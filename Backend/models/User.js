@@ -1,19 +1,15 @@
-import mongoose from "mongoose"; // Ensure mongoose is imported
+import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
-  role: { type: String, enum: ['Newspaper', 'JobSeeker'], default: 'JobSeeker' },
+  role: { type: String, enum: ["Newspaper", "JobSeeker"], default: "JobSeeker" },
   profile: {
-    city: String,
-    phoneNumber: String,
-    education: String, 
+    education: String,
     skills: [String],
-    resumeLink: String
-  }
+    resumeLink: String,
+  },
 }, { timestamps: true });
 
-// This is the line that fixes your error
-const User = mongoose.model("User", UserSchema);
-export default User;
+export default mongoose.model("User", UserSchema);

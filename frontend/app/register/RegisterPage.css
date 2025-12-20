@@ -1,0 +1,233 @@
+.register-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  font-family: sans-serif;
+  background-color: #f5f5dc;
+  color: black;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Branding */
+.register-branding {
+  position: absolute;
+  top: 2.5rem;
+  left: 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.branding-logo {
+  background-color: black;
+  padding: 0.5rem;
+  border-radius: 1rem;
+  color: #f5f5dc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.branding-title {
+  font-size: 1.875rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.025em;
+}
+
+/* Content */
+.register-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  max-width: 90rem;
+  width: 100%;
+  z-index: 10;
+}
+
+@media (min-width: 1024px) {
+  .register-content {
+    flex-direction: row;
+    gap: 6rem;
+  }
+}
+
+/* Left Side */
+.register-left {
+  width: 100%;
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .register-left {
+    width: 50%;
+    text-align: left;
+  }
+}
+
+.register-left-box {
+  width: 16rem;
+  height: 16rem;
+  background-color: rgba(255,255,255,0.3);
+  border: 2px dashed rgba(0,0,0,0.1);
+  border-radius: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 1024px) {
+  .register-left-box {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+.register-left-icon {
+  color: rgba(0,0,0,0.2);
+  margin-bottom: 1rem;
+}
+
+.register-left-text {
+  font-size: 0.625rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #9ca3af;
+}
+
+.register-left-heading {
+  font-size: 3rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+
+.register-left-subheading {
+  color: #9ca3af;
+}
+
+/* Right Side */
+.register-right {
+  width: 100%;
+  background-color: rgba(255,255,255,0.5);
+  border: 1px solid rgba(0,0,0,0.125);
+  border-radius: 60px;
+  padding: 2rem;
+  backdrop-filter: blur(8px);
+}
+
+@media (min-width: 768px) {
+  .register-right {
+    padding: 4rem;
+  }
+}
+
+/* Role buttons */
+.role-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.role-btn {
+  flex: 1;
+  padding: 0.75rem 0;
+  border-radius: 1rem;
+  font-size: 0.625rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  transition: all 0.3s ease;
+  background-color: rgba(255,255,255,0.5);
+  color: #9ca3af;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+.role-btn.active {
+  background-color: black;
+  color: white;
+}
+
+/* Form */
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.input-group {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+}
+
+.input-group input {
+  width: 100%;
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(0,0,0,0.125);
+  padding: 1rem 0 1rem 2rem;
+  font-weight: 700;
+  font-size: 1.125rem;
+  outline: none;
+  transition: border 0.3s ease;
+}
+
+.input-group input:focus {
+  border-bottom-color: black;
+}
+
+/* Submit button */
+.register-submit {
+  width: 100%;
+  background-color: black;
+  color: #f5f5dc;
+  padding: 1.25rem 0;
+  border-radius: 9999px;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.register-submit:hover {
+  transform: scale(1.05);
+}
+
+.register-submit:active {
+  transform: scale(0.95);
+}
+
+.register-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Login link */
+.register-login {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.625rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  text-decoration: underline;
+}
