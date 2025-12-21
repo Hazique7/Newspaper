@@ -3,7 +3,8 @@ import {
   registerUser, 
   loginUser, 
   logoutUser, 
-  getProfile // This must match the name in userController.js
+  getProfile,        // Matches your controller
+  updateUserProfile  // <--- ADD THIS IMPORT
 } from "../controllers/userController.js";
 import { protect } from "../middlewares/authMiddleware.js";
 
@@ -13,5 +14,6 @@ router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.post("/logout", logoutUser);
 router.get("/profile", protect, getProfile);
+router.put("/profile", protect, updateUserProfile); // <--- ADD THIS ROUTE
 
 export default router;
