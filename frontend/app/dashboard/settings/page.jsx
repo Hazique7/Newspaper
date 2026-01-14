@@ -6,7 +6,7 @@ import { useAuth } from "../../context/AuthContext";
 import { User, ShieldCheck, Mail, Building2, Link as LinkIcon, Save } from "lucide-react";
 import "./SettingsPage.css";
 
-// ✅ 1. ADD THIS: Dynamic Base URL
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
 export default function SettingsPage() {
