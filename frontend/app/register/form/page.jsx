@@ -3,7 +3,7 @@
 
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, Suspense } from 'react';
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/app/context/AuthContext";
 
 // We need a wrapper component for Suspense when using useSearchParams in Next.js
 export default function SignupFormWrapper() {
