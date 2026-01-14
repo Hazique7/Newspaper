@@ -37,10 +37,6 @@ app.use(express.json());
 app.use(cookieParser());
 
 // ... rest of your code (Database connection, Routes) ...
-app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:3000",
-  credentials: true
-})); // <--- DELETE THIS DUPLICATE IF IT EXISTS LOWER DOWN
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected"))

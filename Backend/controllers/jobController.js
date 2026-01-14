@@ -1,5 +1,5 @@
 import Job from "../models/Job.js";
-import Application from "../models/applications.js"; // Ensure this matches your actual filename (Application.js or applications.js)
+import Application from "../models/applications.js"; 
 
 // 1. Create a Job (Newspaper)
 export const createJob = async (req, res) => {
