@@ -40,10 +40,11 @@ export const loginUser = async (req, res) => {
     
     // Cookie settings
     res.cookie("token", token, { 
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // Use secure in production
-      sameSite: "strict"
-    });
+  httpOnly: true,
+  secure: true, // MUST be true for Vercel/Production
+  sameSite: "None", // MUST be 'None' to allow cross-domain cookies (Frontend -> Backend)
+  maxAge: 24 * 60 * 60 * 1000 // 1 day
+});
 
     res.json({ 
       success: true,
