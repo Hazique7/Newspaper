@@ -9,7 +9,7 @@ import jobRoutes from "./routes/jobRoutes.js";
 
 dotenv.config();
 const app = express();
-
+app.set("trust proxy", 1);
 // --- START OF FIX ---
 // Allow requests from both localhost variants to prevent mismatches
 const allowedOrigins = [
