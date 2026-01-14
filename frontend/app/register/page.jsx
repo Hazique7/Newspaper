@@ -96,9 +96,12 @@ export default function RegisterPage() {
             </button>
           </form>
 
-          <p className="register-login">
-            <Link href="/login">Already registered? Login</Link>
-          </p>
+         <p className="register-login" style={{ color: '#797f8b' }}>
+  Already registered?{" "}
+  <Link href="/login" style={{ color: 'black', textDecoration: 'underline' }}>
+    Login
+  </Link>
+</p>
         </div>
       </div>
     </div>
