@@ -6,10 +6,12 @@ import { useAuth } from "../../context/AuthContext";
 import { User, ShieldCheck, Mail, Building2, Link as LinkIcon, Save } from "lucide-react";
 import "./SettingsPage.css";
 
+// ✅ 1. ADD THIS: Dynamic Base URL
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+
 export default function SettingsPage() {
   const { user, loading } = useAuth();
   
-  // Local state for form fields
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -18,13 +20,11 @@ export default function SettingsPage() {
   
   const [isSaving, setIsSaving] = useState(false);
 
-  // Populate form when user data loads
   useEffect(() => {
     if (user) {
       setFormData({
         name: user.name || "",
         email: user.email || "",
-        // Access nested profile data safely
         resumeLink: user.profile?.resumeLink || "" 
       });
     }
@@ -33,16 +33,16 @@ export default function SettingsPage() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // Call the backend update route
-      const res = await fetch("http://localhost:5000/api/users/profile", {
+      // ✅ 2. UPDATE: Use Dynamic BASE_URL here
+      const res = await fetch(`${BASE_URL}/users/profile`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // Important for cookies
+        credentials: "include", 
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
           profile: {
-            resumeLink: formData.resumeLink // Nesting strictly required by backend controller
+            resumeLink: formData.resumeLink 
           }
         })
       });
@@ -50,7 +50,6 @@ export default function SettingsPage() {
       if (!res.ok) throw new Error("Failed to update profile");
       
       alert("Profile updated successfully!");
-      // Optional: Refresh page or update context here
     } catch (error) {
       alert(error.message);
     } finally {
@@ -95,7 +94,7 @@ export default function SettingsPage() {
                   </span>
                   <input 
                     type="text" 
-                    className="settings-input" // Ensure you have basic input styles in CSS
+                    className="settings-input" 
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                   />

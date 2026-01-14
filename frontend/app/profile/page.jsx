@@ -1,10 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-// CHANGE: Use DashboardLayout instead of manual Sidebar
+
 import DashboardLayout from "../component/layout/DashboardLayout";
 import { User, Mail, Shield, LogOut, Camera, Link as LinkIcon, Save, Edit2 } from "lucide-react";
 import "./ProfilePage.css";
+
+// ✅ 1. ADD THIS: Dynamic Base URL
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
 export default function ProfilePage() {
   const { user, logout, loading } = useAuth();
@@ -24,7 +27,8 @@ export default function ProfilePage() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const res = await fetch("http://localhost:5000/api/users/profile", {
+      // ✅ 2. USE IT HERE: Replace hardcoded URL
+      const res = await fetch(`${BASE_URL}/users/profile`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

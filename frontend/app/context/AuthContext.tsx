@@ -2,8 +2,8 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 
-// Define the API URL (Update port if needed)
-const API_URL = "http://localhost:5000/api/users";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+const API_URL = `${BASE_URL}/users`;
 
 type User = { _id: string; name: string; email: string; role: string };
 
@@ -34,7 +34,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setUser(data);
         }
       } catch (error) {
-        // CHANGE THIS LINE: Use log instead of error, or just leave empty
         console.log("Guest user - session not found"); 
       } finally {
         setLoading(false);

@@ -1,10 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import DashboardLayout from "../component/layout/DashboardLayout"; // Use the Layout!
+import DashboardLayout from "../component/layout/DashboardLayout"; 
 import ApplicantTable from "../component/ApplicantTable";
 import ResumeModal from "../component/resumeModal";
 import { useAuth } from "../context/AuthContext";
 import ScheduleModal from "../component/ScheduleModal"; 
+
+
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
 export default function ApplicantsPage() {
   const { user } = useAuth();
@@ -20,14 +23,16 @@ export default function ApplicantsPage() {
       if (user?.role !== "Newspaper") return;
 
       try {
-        const res = await fetch("http://localhost:5000/api/jobs/applicants", {
+        // ✅ 2. USE IT HERE: Replace hardcoded URL
+        const res = await fetch(`${BASE_URL}/jobs/applicants`, {
           credentials: "include",
         });
 
         if (!res.ok) {
           const errorData = await res.json();
           console.error("Backend Error:", errorData);
-          alert(`Error: ${errorData.error || "Failed to load applicants"}`);
+          // alert(`Error: ${errorData.error || "Failed to load applicants"}`); 
+          // (Commented out alert to prevent spamming users on load errors)
           return;
         }
 
@@ -55,7 +60,8 @@ export default function ApplicantsPage() {
             prev.map((app) => app._id === id ? { ...app, status: bodyData.status } : app)
         );
 
-        const res = await fetch(`http://localhost:5000/api/jobs/applications/${id}/status`, {
+        // ✅ 3. USE IT HERE: Replace hardcoded URL
+        const res = await fetch(`${BASE_URL}/jobs/applications/${id}/status`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             credentials: "include",
@@ -91,7 +97,7 @@ export default function ApplicantsPage() {
   // 4. Handle Modal Submission (Interview Details)
   const handleScheduleSubmit = async (interviewData) => {
     await sendStatusUpdate(candidateToApprove, {
-      status: "Approved", // Backend expects 'Approved' or 'Approve' depending on your schema
+      status: "Approved", 
       interviewDate: interviewData.date,
       interviewTime: interviewData.time,
       interviewType: interviewData.type,
@@ -119,7 +125,6 @@ export default function ApplicantsPage() {
         onViewResume={(app) => setSelectedApplicant(app)}
       />
 
-      {/* Resume View Modal */}
       {selectedApplicant && (
         <ResumeModal 
           applicant={selectedApplicant} 
@@ -127,7 +132,6 @@ export default function ApplicantsPage() {
         />
       )}
 
-      {/* Schedule Interview Modal (Only shows when approving) */}
       <ScheduleModal 
           isOpen={scheduleModalOpen}
           onClose={() => setScheduleModalOpen(false)}

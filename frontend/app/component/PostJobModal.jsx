@@ -3,7 +3,10 @@
 import React, { useState } from "react";
 import { X, Send } from "lucide-react";
 import "./PostJobModal.css";
-import { useAuth } from "../context/AuthContext"; // Import Auth for token handling
+import { useAuth } from "../context/AuthContext"; 
+
+// ✅ 1. ADD THIS: Dynamic Base URL
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
 export default function PostJobModal({ onClose, onPostSuccess }) {
   const { user } = useAuth();
@@ -13,8 +16,8 @@ export default function PostJobModal({ onClose, onPostSuccess }) {
     category: "Engineering",
     city: "",
     description: "",
-    jobType: "Full-time", // Added default
-    locationType: "On-site" // Added default
+    jobType: "Full-time",
+    locationType: "On-site"
   });
 
   const handleSubmit = async (e) => {
@@ -22,12 +25,12 @@ export default function PostJobModal({ onClose, onPostSuccess }) {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/jobs", {
+      // ✅ 2. USE IT HERE: Replace hardcoded URL
+      const res = await fetch(`${BASE_URL}/jobs`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json"
         },
-        // We include credentials so the cookie (auth token) is sent
         credentials: "include", 
         body: JSON.stringify(jobData),
       });
@@ -39,7 +42,6 @@ export default function PostJobModal({ onClose, onPostSuccess }) {
 
       const savedJob = await res.json();
       
-      // Notify parent to refresh list
       if (onPostSuccess) onPostSuccess(savedJob); 
       onClose();
     } catch (error) {

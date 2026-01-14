@@ -5,6 +5,9 @@ import DashboardLayout from "../component/layout/DashboardLayout";
 import { X, Calendar, MapPin, AlertCircle, CheckCircle2, Bell, Clock } from "lucide-react";
 import "./DashboardPage.css"; 
 
+// ✅ 1. ADD THIS: Dynamic Base URL
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+
 export default function DashboardPage() {
   const { user } = useAuth();
   const [stats, setStats] = useState({ applicants: 0, activeJobs: 0 });
@@ -30,7 +33,8 @@ export default function DashboardPage() {
       // 1. Newspaper Stats
       if (user.role === 'Newspaper') {
         try {
-          const res = await fetch("http://localhost:5000/api/jobs/applicants", { credentials: "include" });
+          // ✅ 2. USE IT HERE
+          const res = await fetch(`${BASE_URL}/jobs/applicants`, { credentials: "include" });
           const data = await res.json();
           if (Array.isArray(data)) setStats({ applicants: data.length, activeJobs: 0 });
         } catch (err) { console.error(err); }
@@ -39,7 +43,8 @@ export default function DashboardPage() {
       // 2. Job Seeker Notifications
       if (user.role === 'JobSeeker') {
         try {
-          const res = await fetch("http://localhost:5000/api/jobs/my-applications", { credentials: "include" });
+          // ✅ 3. USE IT HERE
+          const res = await fetch(`${BASE_URL}/jobs/my-applications`, { credentials: "include" });
           const apps = await res.json();
 
           if (Array.isArray(apps)) {

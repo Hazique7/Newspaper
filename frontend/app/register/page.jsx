@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Briefcase, Newspaper, User, Mail, Lock } from "lucide-react";
 import Link from "next/link";
-import { useAuth } from "../context/AuthContext"; // <--- ADD THIS LINE
+import { useAuth } from "../context/AuthContext"; 
 import "./RegisterPage.css";
 
 export default function RegisterPage() {

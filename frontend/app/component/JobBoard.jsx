@@ -2,9 +2,11 @@
 
 import React, { useEffect, useState } from "react";
 import { MapPin, ArrowRight, Search, PlusCircle, CheckCircle } from "lucide-react";
-import "./JobBoard.css"; // Ensure this matches the professional CSS provided earlier
+import "./JobBoard.css"; 
 import { useAuth } from "../context/AuthContext";
 import PostJobModal from "./PostJobModal";
+
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
 export default function JobBoard() {
   const { user } = useAuth();
@@ -13,20 +15,20 @@ export default function JobBoard() {
   const [showModal, setShowModal] = useState(false);
   const [applying, setApplying] = useState(null);
   const [appliedJobIds, setAppliedJobIds] = useState(new Set()); 
-  
-  // Search State
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const jobsRes = await fetch("http://localhost:5000/api/jobs");
+        // ✅ 2. UPDATE: Fetch jobs using BASE_URL
+        const jobsRes = await fetch(`${BASE_URL}/jobs`);
         const jobsData = await jobsRes.json();
         if (Array.isArray(jobsData)) setJobs(jobsData);
 
         if (user && user.role === "JobSeeker") {
-          const appsRes = await fetch("http://localhost:5000/api/jobs/my-applications", { credentials: "include" });
+          // ✅ 3. UPDATE: Fetch applications using BASE_URL
+          const appsRes = await fetch(`${BASE_URL}/jobs/my-applications`, { credentials: "include" });
           if (appsRes.ok) {
             const appsData = await appsRes.json();
             setAppliedJobIds(new Set(appsData.map(app => app.jobId?._id)));
@@ -49,7 +51,8 @@ export default function JobBoard() {
     if (!user) return alert("Please login to apply");
     setApplying(jobId);
     try {
-      const res = await fetch(`http://localhost:5000/api/jobs/apply/${jobId}`, { method: "POST", credentials: "include" });
+      // ✅ 4. UPDATE: Apply using BASE_URL
+      const res = await fetch(`${BASE_URL}/jobs/apply/${jobId}`, { method: "POST", credentials: "include" });
       const data = await res.json();
       
       if (res.ok) {
@@ -77,13 +80,13 @@ export default function JobBoard() {
         gap: '30px', 
         marginBottom:'30px'
       }}>
-        {/* 1. Title Section */}
+        {/* Title Section */}
         <div style={{ flexShrink: 0 }}>
             <h2 style={{fontSize:'1.8rem', fontWeight:'700', margin:'0', color:'#111'}}>Opportunities</h2>
             <p style={{color:'#666', marginTop:'4px', fontSize:'0.9rem'}}>Find your next role.</p>
         </div>
 
-        {/* 2. Search Bar (Left aligned, responsive width) */}
+        {/* Search Bar */}
         <div style={{position:'relative', width:'350px'}}>
             <Search size={18} style={{position:'absolute', left:'14px', top:'50%', transform:'translateY(-50%)', color:'#9ca3af'}}/>
             <input 
@@ -104,7 +107,7 @@ export default function JobBoard() {
             />
         </div>
 
-        {/* 3. Post Job Button (Pushed to far right) */}
+        {/* Post Job Button */}
         {user?.role === "Newspaper" && (
           <button className="post-job-btn" onClick={() => setShowModal(true)} style={{ marginLeft: 'auto' }}>
             <PlusCircle size={18} /> Post Job
@@ -132,7 +135,6 @@ export default function JobBoard() {
                   </div>
                   <p className="jobboard-card-description">{job.description}</p>
                   
-                  {/* Optional: Add Posted By info if desired */}
                   <div className="jobboard-posted-by" style={{marginTop:'auto', paddingTop:'15px', fontSize:'0.8rem', color:'#94a3b8'}}>
                      Posted by: {job.postedBy?.name || "Unknown"}
                   </div>
